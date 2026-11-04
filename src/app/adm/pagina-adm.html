@@ -1,0 +1,90 @@
+<h1>ADM</h1>
+
+@if (!usuarios.operador()) {
+  <div class="faixa faixa-info">Selecione um usuário no topo da página para mexer nos administradores e ver os logs.</div>
+}
+
+<div class="grade" [class.grade-dupla]="usuarios.operador()">
+  @if (usuarios.operador()) {
+    <form class="card" [formGroup]="form" (ngSubmit)="salvar()">
+      <h2>{{ editando() ? 'Editar administrador' : 'Novo administrador' }}</h2>
+
+      <label for="nome">Nome</label>
+      <input id="nome" formControlName="nome" />
+
+      <label for="email">E-mail</label>
+      <input id="email" type="email" formControlName="email" />
+
+      @if (form.invalid && form.touched) {
+        <small class="erro-campo">Informe nome e um e-mail válido</small>
+      }
+
+      <div class="acoes-form">
+        <button type="submit" class="botao">Salvar</button>
+        @if (editando()) {
+          <button type="button" class="botao botao-leve" (click)="cancelar()">Cancelar</button>
+        }
+      </div>
+    </form>
+  }
+
+  <div class="card">
+    <div class="card-topo">
+      <h2>Administradores</h2>
+      <span class="suave">{{ administradores().length }} cadastrado(s)</span>
+    </div>
+
+    @if (administradores().length === 0) {
+      <p class="suave">Nenhum administrador cadastrado.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            @if (usuarios.operador()) {
+              <th></th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (administrador of administradores(); track administrador.id) {
+            <tr>
+              <td class="suave">{{ administrador.id }}</td>
+              <td>{{ administrador.nome }}</td>
+              <td>{{ administrador.email }}</td>
+              @if (usuarios.operador()) {
+                <td class="col-acoes">
+                  <button type="button" class="botao-link" (click)="editar(administrador)">Editar</button>
+                  <button type="button" class="botao-link perigo" (click)="excluir(administrador)">Excluir</button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+@if (usuarios.operador()) {
+  <div class="card bloco-logs">
+    <div class="card-topo">
+      <h2>Logs do sistema</h2>
+      <button type="button" class="botao botao-leve" (click)="buscarLogs()" [disabled]="buscandoLogs()">
+        {{ buscandoLogs() ? 'Buscando...' : 'Buscar logs' }}
+      </button>
+    </div>
+    <p class="suave">O ADM pede pelo RabbitMQ as últimas operações e o módulo de log responde.</p>
+
+    @if (logs(); as linhas) {
+      @if (linhas.length === 0) {
+        <p class="suave">O módulo de log ainda não tem nenhuma operação salva.</p>
+      } @else {
+        <pre class="logs">@for (linha of linhas; track $index) {{{ linha }}
+}</pre>
+      }
+    }
+  </div>
+}

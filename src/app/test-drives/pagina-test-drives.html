@@ -1,0 +1,84 @@
+<h1>Test Drive</h1>
+
+@if (!usuarios.operador()) {
+  <div class="faixa faixa-info">Selecione um usuário no topo da página para agendar ou remarcar.</div>
+}
+
+<div class="grade" [class.grade-dupla]="usuarios.operador()">
+  @if (usuarios.operador()) {
+    <form class="card" [formGroup]="form" (ngSubmit)="salvar()">
+      <h2>{{ editando() ? 'Remarcar test drive' : 'Agendar test drive' }}</h2>
+
+      <label for="carroId">Carro</label>
+      <select id="carroId" formControlName="carroId">
+        <option [value]="0" disabled>Selecione</option>
+        @for (carro of carros(); track carro.id) {
+          <option [value]="carro.id">{{ carro.marca }} {{ carro.modelo }} {{ carro.ano }}</option>
+        }
+      </select>
+
+      <label for="cliente">Cliente</label>
+      <input id="cliente" formControlName="cliente" />
+
+      <label for="dataHora">Data e hora</label>
+      <input id="dataHora" type="datetime-local" formControlName="dataHora" />
+
+      <label for="observacao">Observação</label>
+      <input id="observacao" formControlName="observacao" />
+
+      @if (form.invalid && form.touched) {
+        <small class="erro-campo">Preencha carro, cliente e data</small>
+      }
+
+      <div class="acoes-form">
+        <button type="submit" class="botao">Salvar</button>
+        @if (editando()) {
+          <button type="button" class="botao botao-leve" (click)="cancelar()">Cancelar</button>
+        }
+      </div>
+    </form>
+  }
+
+  <div class="card">
+    <div class="card-topo">
+      <h2>Agenda</h2>
+      <span class="suave">{{ testDrives().length }} agendado(s)</span>
+    </div>
+
+    @if (testDrives().length === 0) {
+      <p class="suave">Nenhum test drive agendado.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Carro</th>
+            <th>Cliente</th>
+            <th>Quando</th>
+            <th>Observação</th>
+            @if (usuarios.operador()) {
+              <th></th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (testDrive of testDrives(); track testDrive.id) {
+            <tr>
+              <td class="suave">{{ testDrive.id }}</td>
+              <td>{{ nomeDoCarro(testDrive.carroId) }}</td>
+              <td>{{ testDrive.cliente }}</td>
+              <td class="sem-quebra">{{ testDrive.dataHora | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="suave">{{ testDrive.observacao }}</td>
+              @if (usuarios.operador()) {
+                <td class="col-acoes">
+                  <button type="button" class="botao-link" (click)="editar(testDrive)">Editar</button>
+                  <button type="button" class="botao-link perigo" (click)="excluir(testDrive)">Cancelar</button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

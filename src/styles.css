@@ -304,3 +304,30 @@ tbody tr:last-child td {
     flex-direction: column;
   }
 }
+
+.saldo {
+  font-weight: 700;
+  color: var(--cor-sucesso);
+}
+
+.saldo.negativo {
+  color: var(--cor-perigo);
+}
+
+.bloco-logs {
+  margin-top: 20px;
+}
+
+.logs {
+  margin: 12px 0 0;
+  padding: 14px;
+  max-height: 420px;
+  overflow: auto;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
