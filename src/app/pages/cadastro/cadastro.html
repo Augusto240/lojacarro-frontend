@@ -1,0 +1,47 @@
+<section class="container pagina">
+  <div class="caixa caixa-estreita">
+    <span class="rotulo">Nova conta</span>
+    <h1>Criar conta</h1>
+    <p class="subtitulo">Leva menos de um minuto e já dá para agendar seu test drive.</p>
+
+    <form class="formulario" [formGroup]="form" (ngSubmit)="cadastrar()">
+      <div class="campo">
+        <label for="nome">Nome completo</label>
+        <input id="nome" formControlName="nome" autocomplete="name" />
+        @if (form.controls.nome.touched && form.controls.nome.invalid) {
+          <span class="erro-campo">Informe seu nome.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" autocomplete="email" />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="erro-campo">Informe um e-mail válido.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="telefone">Telefone (opcional)</label>
+        <input id="telefone" formControlName="telefone" autocomplete="tel" placeholder="84999990000" />
+      </div>
+
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" formControlName="senha" autocomplete="new-password" />
+        @if (form.controls.senha.touched && form.controls.senha.invalid) {
+          <span class="erro-campo">A senha precisa ter pelo menos 6 caracteres.</span>
+        }
+      </div>
+
+      @if (erro()) {
+        <p class="erro-campo">{{ erro() }}</p>
+      }
+
+      <button type="submit" class="botao" [disabled]="enviando()">
+        {{ enviando() ? 'Criando...' : 'Criar conta' }}
+      </button>
+      <p class="pequeno">Já tem conta? <a routerLink="/login">Entrar</a></p>
+    </form>
+  </div>
+</section>

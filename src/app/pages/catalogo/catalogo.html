@@ -1,0 +1,45 @@
+<section class="container pagina">
+  <span class="rotulo">Catálogo</span>
+  <h1>Encontre o seu carro</h1>
+  <p class="subtitulo">Todos os veículos disponíveis para test drive.</p>
+
+  <form class="filtros" (ngSubmit)="buscar()">
+    <div class="campo campo-busca">
+      <label for="busca">Marca ou modelo</label>
+      <input id="busca" name="busca" [(ngModel)]="filtro.busca" placeholder="Ex.: Civic" />
+    </div>
+    <div class="campo">
+      <label for="precoMin">Preço mínimo</label>
+      <input id="precoMin" name="precoMin" type="number" min="0" [(ngModel)]="filtro.precoMin" />
+    </div>
+    <div class="campo">
+      <label for="precoMax">Preço máximo</label>
+      <input id="precoMax" name="precoMax" type="number" min="0" [(ngModel)]="filtro.precoMax" />
+    </div>
+    <div class="campo">
+      <label for="anoMin">Ano de</label>
+      <input id="anoMin" name="anoMin" type="number" [(ngModel)]="filtro.anoMin" />
+    </div>
+    <div class="campo">
+      <label for="anoMax">Ano até</label>
+      <input id="anoMax" name="anoMax" type="number" [(ngModel)]="filtro.anoMax" />
+    </div>
+    <div class="acoes">
+      <button type="submit" class="botao">Filtrar</button>
+      <button type="button" class="botao-texto" (click)="limpar()">Limpar</button>
+    </div>
+  </form>
+
+  @if (carregando()) {
+    <app-carregando texto="Buscando veículos..." />
+  } @else if (veiculos().length === 0) {
+    <div class="vazio">Nenhum veículo encontrado com esses filtros.</div>
+  } @else {
+    <p class="pequeno">{{ veiculos().length }} veículo(s) encontrado(s)</p>
+    <div class="grade-veiculos">
+      @for (veiculo of veiculos(); track veiculo.id) {
+        <app-cartao-veiculo [veiculo]="veiculo" />
+      }
+    </div>
+  }
+</section>

@@ -1,16 +1,14 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { routes } from './app.routes';
-import { cabecalhosInterceptor } from './core/cabecalhos.interceptor';
-import { ErroGlobal } from './core/erro-global';
-import { logHttpInterceptor } from './core/log-http.interceptor';
+import { tokenInterceptor } from './interceptors/token.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([cabecalhosInterceptor, logHttpInterceptor])),
-    { provide: ErrorHandler, useClass: ErroGlobal },
+    provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
+    provideHttpClient(withFetch(), withInterceptors([tokenInterceptor])),
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
   ],
 };

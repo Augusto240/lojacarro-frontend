@@ -1,0 +1,70 @@
+<div class="cabecalho-secao">
+  <h2>Vendas</h2>
+</div>
+
+<div class="caixa formulario-veiculo">
+  <h3>{{ editando() ? 'Editar venda #' + editando()!.id : 'Registrar venda' }}</h3>
+  <form class="formulario" [formGroup]="form" (ngSubmit)="salvar()">
+    <div class="linha">
+      <div class="campo">
+        <label for="veiculoId">Veículo</label>
+        <select id="veiculoId" formControlName="veiculoId">
+          <option [value]="0" disabled>Escolha</option>
+          @if (editando(); as venda) {
+            <option [value]="venda.veiculo.id">{{ venda.veiculo.marca }} {{ venda.veiculo.modelo }}</option>
+          }
+          @for (veiculo of disponiveis(); track veiculo.id) {
+            <option [value]="veiculo.id">{{ veiculo.marca }} {{ veiculo.modelo }} {{ veiculo.anoModelo }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label for="cliente">Cliente</label>
+        <input id="cliente" formControlName="cliente" />
+      </div>
+      <div class="campo">
+        <label for="valor">Valor (R$)</label>
+        <input id="valor" type="number" formControlName="valor" />
+      </div>
+      <div class="campo">
+        <label for="dataVenda">Data</label>
+        <input id="dataVenda" type="date" formControlName="dataVenda" />
+      </div>
+    </div>
+    <div class="acoes">
+      <button type="submit" class="botao">Salvar</button>
+      @if (editando()) {
+        <button type="button" class="botao-texto" (click)="cancelar()">Cancelar</button>
+      }
+    </div>
+  </form>
+</div>
+
+@if (carregando()) {
+  <app-carregando />
+} @else if (vendas().length === 0) {
+  <div class="vazio">Nenhuma venda registrada.</div>
+} @else {
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Veículo</th><th>Cliente</th><th>Valor</th><th>Data</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        @for (venda of vendas(); track venda.id) {
+          <tr>
+            <td>{{ venda.id }}</td>
+            <td>{{ venda.veiculo.marca }} {{ venda.veiculo.modelo }}</td>
+            <td>{{ venda.cliente }}</td>
+            <td>{{ venda.valor | currency: 'BRL' }}</td>
+            <td>{{ venda.dataVenda | date: 'dd/MM/yyyy' }}</td>
+            <td class="acoes-tabela">
+              <button class="botao-texto" (click)="editar(venda)">Editar</button>
+              <button class="botao-texto perigo" (click)="excluir(venda)">Excluir</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

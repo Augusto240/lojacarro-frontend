@@ -1,0 +1,18 @@
+<section class="painel-topo">
+  <div class="container">
+    <span class="rotulo">Painel administrativo</span>
+    <h1>Olá, {{ auth.usuario()?.nome }}</h1>
+    <nav class="abas">
+      <a routerLink="/admin" routerLinkActive="ativa" [routerLinkActiveOptions]="{ exact: true }">Visão geral</a>
+      <a routerLink="/admin/veiculos" routerLinkActive="ativa">Veículos</a>
+      <a routerLink="/admin/agendamentos" routerLinkActive="ativa">Agendamentos</a>
+      <a routerLink="/admin/vendas" routerLinkActive="ativa">Vendas</a>
+      <a routerLink="/admin/contabilidade" routerLinkActive="ativa">Contabilidade</a>
+      <a routerLink="/admin/administradores" routerLinkActive="ativa">Administradores</a>
+    </nav>
+  </div>
+</section>
+
+<section class="container pagina pagina-admin">
+  <router-outlet />
+</section>

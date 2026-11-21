@@ -1,43 +1,52 @@
 <header class="topo">
-  <div class="topo-conteudo">
-    <a routerLink="/" class="marca">
-      <span class="marca-icone">LC</span>
-      LojaCarro
+  <div class="container topo-conteudo">
+    <a routerLink="/" class="logo">
+      <span class="logo-marca"></span>
+      LOJA<strong>CARRO</strong>
     </a>
 
-    <nav>
-      <a routerLink="/usuarios" routerLinkActive="ativo">Usuários</a>
-      <a routerLink="/carros" routerLinkActive="ativo">Carros</a>
-      <a routerLink="/vendas" routerLinkActive="ativo">Vendas</a>
-      <a routerLink="/test-drive" routerLinkActive="ativo">Test Drive</a>
-      <a routerLink="/contabilidade" routerLinkActive="ativo">Contabilidade</a>
-      <a routerLink="/adm" routerLinkActive="ativo">ADM</a>
-      <a routerLink="/auditoria" routerLinkActive="ativo">Auditoria</a>
-    </nav>
+    <button class="botao-menu" (click)="menuAberto.set(!menuAberto())" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
 
-    <div class="operador">
-      <label for="operador">Usuário</label>
-      <select id="operador" (change)="trocarOperador($any($event.target).value)">
-        <option value="" [selected]="!usuarios.operador()">Selecione</option>
-        @for (usuario of usuarios.usuarios(); track usuario.id) {
-          <option [value]="usuario.id" [selected]="usuario.id === usuarios.operador()?.id">
-            {{ usuario.nome }} ({{ usuario.cargo }})
-          </option>
-        }
-      </select>
-    </div>
+    <nav class="menu" [class.aberto]="menuAberto()">
+      <a routerLink="/" routerLinkActive="ativo" [routerLinkActiveOptions]="{ exact: true }">Início</a>
+      <a routerLink="/veiculos" routerLinkActive="ativo" [routerLinkActiveOptions]="{ exact: true }">Catálogo</a>
+
+      @if (auth.ehCliente()) {
+        <a routerLink="/meus-agendamentos" routerLinkActive="ativo">Meus test drives</a>
+      }
+      @if (auth.ehAdmin()) {
+        <a routerLink="/admin" routerLinkActive="ativo">Painel</a>
+      }
+
+      @if (auth.usuario(); as usuario) {
+        <span class="ola">Olá, {{ usuario.nome.split(' ')[0] }}</span>
+        <button class="botao-contorno botao-pequeno" (click)="sair()">Sair</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="ativo">Entrar</a>
+        <a routerLink="/cadastro" class="botao botao-pequeno">Criar conta</a>
+      }
+    </nav>
   </div>
 </header>
 
-<main class="conteudo">
+<main>
   <router-outlet />
 </main>
 
-<div class="avisos" aria-live="polite">
+<footer class="rodape">
+  <div class="container rodape-conteudo">
+    <span class="logo logo-pequena"><span class="logo-marca"></span>LOJA<strong>CARRO</strong></span>
+    <span>Test drive de 30 minutos, das 07h às 20h.</span>
+  </div>
+</footer>
+
+<div class="avisos">
   @for (aviso of avisos.avisos(); track aviso.id) {
-    <div class="aviso" [class.aviso-erro]="aviso.tipo === 'erro'" role="status">
+    <div class="aviso" [class.erro]="aviso.tipo === 'erro'">
       <span>{{ aviso.texto }}</span>
-      <button type="button" (click)="avisos.fechar(aviso.id)" aria-label="Fechar">×</button>
+      <button (click)="avisos.fechar(aviso.id)" aria-label="Fechar">×</button>
     </div>
   }
 </div>

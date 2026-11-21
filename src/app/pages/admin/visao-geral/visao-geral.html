@@ -1,0 +1,42 @@
+<div class="numeros">
+  <div class="numero-card">
+    <span class="numero-valor">{{ contar('DISPONIVEL') }}</span>
+    <span class="numero-nome">Veículos à venda</span>
+  </div>
+  <div class="numero-card">
+    <span class="numero-valor">{{ contar('VENDIDO') }}</span>
+    <span class="numero-nome">Vendidos</span>
+  </div>
+  <div class="numero-card">
+    <span class="numero-valor">{{ proximos().length }}</span>
+    <span class="numero-nome">Test drives marcados</span>
+  </div>
+</div>
+
+<div class="cabecalho-secao">
+  <h2>Próximos test drives</h2>
+  <a routerLink="/admin/agendamentos" class="botao-texto">Ver todos →</a>
+</div>
+
+@if (carregando()) {
+  <app-carregando />
+} @else if (proximos().length === 0) {
+  <div class="vazio">Nenhum test drive marcado.</div>
+} @else {
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr><th>Quando</th><th>Cliente</th><th>Veículo</th></tr>
+      </thead>
+      <tbody>
+        @for (agendamento of proximos().slice(0, 8); track agendamento.id) {
+          <tr>
+            <td>{{ agendamento.inicio | date: 'dd/MM HH:mm' }}</td>
+            <td>{{ agendamento.cliente }}</td>
+            <td>{{ agendamento.veiculo }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

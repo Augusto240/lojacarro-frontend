@@ -1,0 +1,35 @@
+<section class="container pagina">
+  <span class="rotulo">Minha conta</span>
+  <h1>Meus test drives</h1>
+  <p class="subtitulo">Acompanhe e cancele seus agendamentos.</p>
+
+  @if (carregando()) {
+    <app-carregando />
+  } @else if (agendamentos().length === 0) {
+    <div class="vazio">
+      Você ainda não agendou nenhum test drive.
+      <div class="acoes acoes-centro"><a routerLink="/veiculos" class="botao">Ver catálogo</a></div>
+    </div>
+  } @else {
+    <div class="lista-agendamentos">
+      @for (agendamento of agendamentos(); track agendamento.id) {
+        <article class="item-agendamento">
+          <img [src]="enderecoDaImagem(agendamento.fotoVeiculo)" [alt]="agendamento.veiculo" />
+          <div>
+            <h3>{{ agendamento.veiculo }}</h3>
+            <span class="data-agendamento">
+              {{ agendamento.inicio | date: 'dd/MM/yyyy' }} · {{ agendamento.inicio | date: 'HH:mm' }} às
+              {{ agendamento.fim | date: 'HH:mm' }}
+            </span>
+          </div>
+          <span [class]="'selo selo-' + agendamento.situacao">{{ situacoes[agendamento.situacao] }}</span>
+          @if (podeCancelar(agendamento)) {
+            <button class="botao-texto perigo" (click)="cancelar(agendamento)">Cancelar</button>
+          } @else {
+            <span></span>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

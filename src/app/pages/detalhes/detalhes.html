@@ -1,0 +1,52 @@
+<section class="container pagina">
+  <a routerLink="/veiculos" class="botao-texto voltar">← Voltar ao catálogo</a>
+
+  @if (naoEncontrado()) {
+    <div class="vazio">Esse veículo não existe ou não está mais à venda.</div>
+  } @else if (veiculo(); as veiculo) {
+    <div class="detalhe">
+      <div class="galeria">
+        <img class="foto-grande" [src]="enderecoDaImagem(fotoAberta())" [alt]="veiculo.marca + ' ' + veiculo.modelo" />
+        @if (veiculo.fotos.length > 1) {
+          <div class="miniaturas">
+            @for (foto of veiculo.fotos; track foto.id) {
+              <button [class.ativa]="foto.url === fotoAberta()" (click)="fotoAberta.set(foto.url)">
+                <img [src]="enderecoDaImagem(foto.url)" alt="Foto do veículo" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="informacoes">
+        <span class="rotulo">{{ veiculo.marca }}</span>
+        <h1>{{ veiculo.modelo }}</h1>
+        <span class="preco preco-grande">{{ veiculo.preco | currency: 'BRL' }}</span>
+
+        <dl class="ficha">
+          <div><dt>Ano</dt><dd>{{ veiculo.anoFabricacao }}/{{ veiculo.anoModelo }}</dd></div>
+          <div><dt>Quilometragem</dt><dd>{{ veiculo.quilometragem | number: '1.0-0' }} km</dd></div>
+          <div><dt>Câmbio</dt><dd>{{ transmissoes[veiculo.transmissao] }}</dd></div>
+          <div><dt>Combustível</dt><dd>{{ combustiveis[veiculo.combustivel] }}</dd></div>
+          <div><dt>Cor</dt><dd>{{ veiculo.cor }}</dd></div>
+          <div><dt>Situação</dt><dd><span class="selo" [class]="'selo selo-' + veiculo.situacao">{{ situacoes[veiculo.situacao] }}</span></dd></div>
+        </dl>
+
+        @if (veiculo.descricao) {
+          <p class="descricao">{{ veiculo.descricao }}</p>
+        }
+
+        @if (veiculo.situacao !== 'DISPONIVEL') {
+          <p class="pequeno">Esse veículo não está disponível para test drive.</p>
+        } @else if (auth.ehAdmin()) {
+          <p class="pequeno">Administradores não agendam test drive. Entre com uma conta de cliente.</p>
+        } @else {
+          <a [routerLink]="['/veiculos', veiculo.id, 'agendar']" class="botao">Agendar test drive</a>
+          <p class="pequeno">30 minutos, das 07h às 20h.</p>
+        }
+      </div>
+    </div>
+  } @else {
+    <app-carregando />
+  }
+</section>

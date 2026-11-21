@@ -1,0 +1,171 @@
+<div class="cabecalho-secao">
+  <h2>Veículos</h2>
+  @if (!formularioAberto()) {
+    <button class="botao" (click)="novo()">+ Novo veículo</button>
+  }
+</div>
+
+@if (formularioAberto()) {
+  <div class="caixa formulario-veiculo">
+    <h3>{{ editando() ? 'Editar ' + editando()!.marca + ' ' + editando()!.modelo : 'Novo veículo' }}</h3>
+
+    <form class="formulario" [formGroup]="form" (ngSubmit)="salvar()">
+      <div class="linha">
+        <div class="campo">
+          <label for="marca">Marca</label>
+          <input id="marca" formControlName="marca" />
+          @if (form.controls.marca.touched && form.controls.marca.invalid) {
+            <span class="erro-campo">Informe a marca.</span>
+          }
+        </div>
+        <div class="campo">
+          <label for="modelo">Modelo</label>
+          <input id="modelo" formControlName="modelo" />
+          @if (form.controls.modelo.touched && form.controls.modelo.invalid) {
+            <span class="erro-campo">Informe o modelo.</span>
+          }
+        </div>
+        <div class="campo">
+          <label for="cor">Cor</label>
+          <input id="cor" formControlName="cor" />
+          @if (form.controls.cor.touched && form.controls.cor.invalid) {
+            <span class="erro-campo">Informe a cor.</span>
+          }
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="anoFabricacao">Ano de fabricação</label>
+          <input id="anoFabricacao" type="number" formControlName="anoFabricacao" />
+        </div>
+        <div class="campo">
+          <label for="anoModelo">Ano do modelo</label>
+          <input id="anoModelo" type="number" formControlName="anoModelo" />
+        </div>
+        <div class="campo">
+          <label for="quilometragem">Quilometragem</label>
+          <input id="quilometragem" type="number" formControlName="quilometragem" />
+        </div>
+        <div class="campo">
+          <label for="preco">Preço (R$)</label>
+          <input id="preco" type="number" formControlName="preco" />
+          @if (form.controls.preco.touched && form.controls.preco.invalid) {
+            <span class="erro-campo">Informe o preço.</span>
+          }
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label for="combustivel">Combustível</label>
+          <select id="combustivel" formControlName="combustivel">
+            @for (opcao of combustiveis; track opcao[0]) {
+              <option [value]="opcao[0]">{{ opcao[1] }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo">
+          <label for="transmissao">Câmbio</label>
+          <select id="transmissao" formControlName="transmissao">
+            @for (opcao of transmissoes; track opcao[0]) {
+              <option [value]="opcao[0]">{{ opcao[1] }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" rows="3" formControlName="descricao"></textarea>
+      </div>
+
+      <div class="campo">
+        <label>{{ editando() ? 'Fotos' : 'Foto (obrigatória)' }}</label>
+        <div class="fotos-formulario">
+          @if (editando(); as veiculo) {
+            @for (foto of veiculo.fotos; track foto.id) {
+              <div class="foto-item">
+                <img [src]="enderecoDaImagem(foto.url)" alt="Foto do veículo" />
+                @if (foto.principal) {
+                  <span class="selo-foto">Principal</span>
+                }
+                <button type="button" class="remover-foto" (click)="removerFoto(veiculo, foto.id)" aria-label="Remover foto">×</button>
+              </div>
+            }
+          } @else if (previa()) {
+            <div class="foto-item">
+              <img [src]="previa()" alt="Prévia da foto" />
+            </div>
+          }
+          <label class="enviar-foto">
+            <input type="file" accept="image/jpeg,image/png,image/webp" (change)="escolherFoto($event)" />
+            <span>{{ editando() ? '+ Adicionar foto' : previa() ? 'Trocar foto' : '+ Escolher foto' }}</span>
+          </label>
+        </div>
+        <span class="pequeno">JPG, PNG ou WebP de até 5 MB.</span>
+        @if (erroFoto()) {
+          <span class="erro-campo">{{ erroFoto() }}</span>
+        }
+      </div>
+
+      <div class="acoes">
+        <button type="submit" class="botao" [disabled]="salvando()">{{ salvando() ? 'Salvando...' : 'Salvar' }}</button>
+        <button type="button" class="botao-texto" (click)="fechar()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+}
+
+<div class="filtros filtros-admin">
+  <div class="campo">
+    <label for="busca">Marca ou modelo</label>
+    <input id="busca" [(ngModel)]="busca" (keyup.enter)="carregar()" />
+  </div>
+  <div class="campo">
+    <label for="situacao">Situação</label>
+    <select id="situacao" [(ngModel)]="situacao" (change)="carregar()">
+      <option value="">Todas</option>
+      <option value="DISPONIVEL">Disponível</option>
+      <option value="VENDIDO">Vendido</option>
+      <option value="INATIVO">Inativo</option>
+    </select>
+  </div>
+  <button class="botao-contorno" (click)="carregar()">Buscar</button>
+</div>
+
+@if (carregando()) {
+  <app-carregando />
+} @else if (veiculos().length === 0) {
+  <div class="vazio">Nenhum veículo encontrado.</div>
+} @else {
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr><th></th><th>Veículo</th><th>Preço</th><th>Situação</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        @for (veiculo of veiculos(); track veiculo.id) {
+          <tr>
+            <td><img class="miniatura" [src]="enderecoDaImagem(veiculo.fotoPrincipal)" [alt]="veiculo.modelo" /></td>
+            <td>
+              <strong>{{ veiculo.marca }} {{ veiculo.modelo }}</strong>
+              <div class="pequeno">{{ veiculo.anoFabricacao }}/{{ veiculo.anoModelo }} · {{ veiculo.fotos.length }} foto(s)</div>
+            </td>
+            <td>{{ veiculo.preco | currency: 'BRL' }}</td>
+            <td><span [class]="'selo selo-' + veiculo.situacao">{{ situacoes[veiculo.situacao] }}</span></td>
+            <td class="acoes-tabela">
+              <button class="botao-texto" (click)="editar(veiculo)">Editar</button>
+              @if (veiculo.situacao === 'DISPONIVEL') {
+                <button class="botao-texto" (click)="marcarVendido(veiculo)">Vendido</button>
+                <button class="botao-texto perigo" (click)="desativar(veiculo)">Desativar</button>
+              } @else {
+                <button class="botao-texto" (click)="reativar(veiculo)">Reativar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

@@ -1,0 +1,12 @@
+<a class="cartao-veiculo" [routerLink]="['/veiculos', veiculo().id]">
+  <img class="foto" [src]="enderecoDaImagem(veiculo().fotoPrincipal)" [alt]="veiculo().marca + ' ' + veiculo().modelo" loading="lazy" />
+  <div class="corpo">
+    <span class="marca">{{ veiculo().marca }}</span>
+    <h3>{{ veiculo().modelo }}</h3>
+    <span class="detalhes">
+      {{ veiculo().anoFabricacao }}/{{ veiculo().anoModelo }} · {{ veiculo().quilometragem | number: '1.0-0' }} km ·
+      {{ transmissoes[veiculo().transmissao] }}
+    </span>
+    <span class="preco">{{ veiculo().preco | currency: 'BRL' }}</span>
+  </div>
+</a>

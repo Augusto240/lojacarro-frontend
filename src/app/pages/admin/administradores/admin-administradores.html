@@ -1,0 +1,68 @@
+<div class="cabecalho-secao">
+  <h2>Administradores</h2>
+</div>
+
+<div class="caixa formulario-veiculo">
+  <h3>Novo administrador</h3>
+  <form class="formulario" [formGroup]="form" (ngSubmit)="criar()">
+    <div class="linha">
+      <div class="campo">
+        <label for="nome">Nome</label>
+        <input id="nome" formControlName="nome" />
+      </div>
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" />
+      </div>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" formControlName="senha" />
+      </div>
+    </div>
+    <div class="acoes">
+      <button type="submit" class="botao">Criar</button>
+    </div>
+  </form>
+</div>
+
+<div class="tabela-rolagem">
+  <table>
+    <thead>
+      <tr><th>Nome</th><th>E-mail</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (administrador of administradores(); track administrador.id) {
+        <tr>
+          <td>{{ administrador.nome }}</td>
+          <td>{{ administrador.email }}</td>
+          <td class="acoes-tabela">
+            @if (administrador.id !== auth.usuario()?.id) {
+              <button class="botao-texto perigo" (click)="excluir(administrador)">Excluir</button>
+            } @else {
+              <span class="pequeno">você</span>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="cabecalho-secao logs-titulo">
+  <div>
+    <h2>Logs do sistema</h2>
+    <p class="pequeno">Busca as últimas operações no microsserviço de log, pelo RabbitMQ.</p>
+  </div>
+  <button class="botao-contorno" (click)="verLogs()" [disabled]="buscandoLogs()">Buscar logs</button>
+</div>
+
+@if (buscandoLogs()) {
+  <app-carregando texto="Perguntando ao módulo de log..." />
+} @else if (logs(); as linhas) {
+  @if (linhas.length === 0) {
+    <div class="vazio">Nenhuma operação registrada ainda.</div>
+  } @else {
+    <pre class="logs">@for (linha of linhas; track $index) {{{ linha }}
+}</pre>
+  }
+}

@@ -1,0 +1,65 @@
+<div class="cabecalho-secao">
+  <h2>Agendamentos</h2>
+</div>
+
+<div class="filtros filtros-admin">
+  <div class="campo">
+    <label for="data">Dia</label>
+    <input id="data" type="date" [(ngModel)]="data" (change)="carregar()" />
+  </div>
+  <div class="campo">
+    <label for="veiculo">Veículo</label>
+    <select id="veiculo" [(ngModel)]="veiculoId" (change)="carregar()">
+      <option value="">Todos</option>
+      @for (veiculo of veiculos(); track veiculo.id) {
+        <option [value]="veiculo.id">{{ veiculo.marca }} {{ veiculo.modelo }} {{ veiculo.anoModelo }}</option>
+      }
+    </select>
+  </div>
+  <div class="campo">
+    <label for="situacao">Situação</label>
+    <select id="situacao" [(ngModel)]="situacao" (change)="carregar()">
+      <option value="">Todas</option>
+      <option value="CONFIRMADO">Confirmado</option>
+      <option value="REALIZADO">Realizado</option>
+      <option value="CANCELADO">Cancelado</option>
+    </select>
+  </div>
+  <button class="botao-texto" (click)="limpar()">Limpar</button>
+</div>
+
+@if (carregando()) {
+  <app-carregando />
+} @else if (agendamentos().length === 0) {
+  <div class="vazio">Nenhum agendamento encontrado.</div>
+} @else {
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr><th>Data</th><th>Horário</th><th>Cliente</th><th>Veículo</th><th>Situação</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        @for (agendamento of agendamentos(); track agendamento.id) {
+          <tr>
+            <td>{{ agendamento.inicio | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ agendamento.inicio | date: 'HH:mm' }} - {{ agendamento.fim | date: 'HH:mm' }}</td>
+            <td>
+              {{ agendamento.cliente }}
+              <div class="pequeno">{{ agendamento.emailCliente }} {{ agendamento.telefoneCliente ?? '' }}</div>
+            </td>
+            <td>{{ agendamento.veiculo }}</td>
+            <td><span [class]="'selo selo-' + agendamento.situacao">{{ situacoes[agendamento.situacao] }}</span></td>
+            <td class="acoes-tabela">
+              @if (agendamento.situacao === 'CONFIRMADO') {
+                <button class="botao-texto" (click)="marcarRealizado(agendamento)">Realizado</button>
+                @if (ehFuturo(agendamento)) {
+                  <button class="botao-texto perigo" (click)="cancelar(agendamento)">Cancelar</button>
+                }
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

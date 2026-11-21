@@ -1,0 +1,51 @@
+<section class="hero">
+  <div class="container hero-conteudo">
+    <span class="rotulo">LojaCarro</span>
+    <h1>Seu próximo carro<br />começa com um <span>test drive.</span></h1>
+    <p>Escolha o veículo no catálogo, veja os horários livres e reserve 30 minutos ao volante. Sem fila e sem ligação.</p>
+    <div class="acoes">
+      <a routerLink="/veiculos" class="botao">Ver catálogo</a>
+      <a routerLink="/cadastro" class="botao-contorno botao-claro">Criar conta</a>
+    </div>
+  </div>
+</section>
+
+<section class="container passos">
+  <div class="passo">
+    <span class="numero">01</span>
+    <h3>Escolha</h3>
+    <p>Filtre por marca, modelo, preço e ano até achar o carro certo.</p>
+  </div>
+  <div class="passo">
+    <span class="numero">02</span>
+    <h3>Agende</h3>
+    <p>Veja os horários livres do dia e reserve o seu em um clique.</p>
+  </div>
+  <div class="passo">
+    <span class="numero">03</span>
+    <h3>Dirija</h3>
+    <p>Venha na loja no horário marcado. Mudou de ideia? Cancele pelo site.</p>
+  </div>
+</section>
+
+<section class="container destaques">
+  <div class="cabecalho-secao">
+    <div>
+      <span class="rotulo">Chegaram agora</span>
+      <h2>Destaques</h2>
+    </div>
+    <a routerLink="/veiculos" class="botao-texto">Ver todos →</a>
+  </div>
+
+  @if (carregando()) {
+    <app-carregando />
+  } @else if (destaques().length === 0) {
+    <div class="vazio">Nenhum veículo cadastrado ainda.</div>
+  } @else {
+    <div class="grade-veiculos">
+      @for (veiculo of destaques(); track veiculo.id) {
+        <app-cartao-veiculo [veiculo]="veiculo" />
+      }
+    </div>
+  }
+</section>

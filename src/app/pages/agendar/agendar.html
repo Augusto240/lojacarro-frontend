@@ -1,0 +1,62 @@
+<section class="container pagina">
+  <a [routerLink]="['/veiculos', id()]" class="botao-texto voltar">← Voltar ao veículo</a>
+  <span class="rotulo">Test drive</span>
+  <h1>Escolha o horário</h1>
+  <p class="subtitulo">Cada test drive dura 30 minutos. Os horários em cinza já estão reservados ou já passaram.</p>
+
+  <div class="agendar">
+    <aside class="caixa resumo">
+      @if (veiculo(); as veiculo) {
+        <img [src]="enderecoDaImagem(veiculo.fotoPrincipal)" [alt]="veiculo.modelo" />
+        <span class="marca pequeno">{{ veiculo.marca }}</span>
+        <h3>{{ veiculo.modelo }} {{ veiculo.anoModelo }}</h3>
+        <span class="preco">{{ veiculo.preco | currency: 'BRL' }}</span>
+      } @else {
+        <app-carregando />
+      }
+    </aside>
+
+    <div class="caixa">
+      <div class="campo campo-data">
+        <label for="data">Dia</label>
+        <input id="data" type="date" [min]="hoje" [(ngModel)]="data" (change)="carregarHorarios()" />
+      </div>
+
+      @if (carregandoHorarios()) {
+        <app-carregando texto="Buscando horários..." />
+      } @else if (quantidadeLivre() === 0) {
+        <div class="vazio">
+          Nenhum horário livre nesse dia.
+          <div class="acoes acoes-centro">
+            <button type="button" class="botao-contorno" (click)="proximoDia()">Ver próximo dia →</button>
+          </div>
+        </div>
+      } @else {
+        <div class="horarios">
+          @for (horario of horarios(); track horario.inicio) {
+            <button
+              type="button"
+              class="horario"
+              [class.escolhido]="escolhido() === horario.inicio"
+              [disabled]="!horario.livre"
+              (click)="escolhido.set(horario.inicio)"
+            >
+              {{ horario.inicio | date: 'HH:mm' }}
+            </button>
+          }
+        </div>
+      }
+
+      <div class="confirmacao">
+        @if (escolhido(); as inicio) {
+          <span>{{ inicio | date: "dd/MM/yyyy 'às' HH:mm" }}</span>
+        } @else {
+          <span class="pequeno">Escolha um horário livre.</span>
+        }
+        <button class="botao" [disabled]="!escolhido() || enviando()" (click)="confirmar()">
+          {{ enviando() ? 'Agendando...' : 'Confirmar test drive' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

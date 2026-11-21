@@ -1,0 +1,65 @@
+<div class="cabecalho-secao">
+  <h2>Contabilidade</h2>
+  <span class="preco">Saldo: {{ saldo() | currency: 'BRL' }}</span>
+</div>
+
+<div class="caixa formulario-veiculo">
+  <h3>{{ editando() ? 'Editar lançamento' : 'Novo lançamento' }}</h3>
+  <form class="formulario" [formGroup]="form" (ngSubmit)="salvar()">
+    <div class="linha">
+      <div class="campo">
+        <label for="descricao">Descrição</label>
+        <input id="descricao" formControlName="descricao" />
+      </div>
+      <div class="campo">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" formControlName="tipo">
+          <option value="RECEITA">Receita</option>
+          <option value="DESPESA">Despesa</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="valor">Valor (R$)</label>
+        <input id="valor" type="number" formControlName="valor" />
+      </div>
+      <div class="campo">
+        <label for="data">Data</label>
+        <input id="data" type="date" formControlName="data" />
+      </div>
+    </div>
+    <div class="acoes">
+      <button type="submit" class="botao">Salvar</button>
+      @if (editando()) {
+        <button type="button" class="botao-texto" (click)="cancelar()">Cancelar</button>
+      }
+    </div>
+  </form>
+</div>
+
+@if (carregando()) {
+  <app-carregando />
+} @else if (lancamentos().length === 0) {
+  <div class="vazio">Nenhum lançamento.</div>
+} @else {
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        @for (lancamento of lancamentos(); track lancamento.id) {
+          <tr>
+            <td>{{ lancamento.data | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ lancamento.descricao }}</td>
+            <td>{{ lancamento.tipo === 'RECEITA' ? 'Receita' : 'Despesa' }}</td>
+            <td>{{ lancamento.valor | currency: 'BRL' }}</td>
+            <td class="acoes-tabela">
+              <button class="botao-texto" (click)="editar(lancamento)">Editar</button>
+              <button class="botao-texto perigo" (click)="excluir(lancamento)">Excluir</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
